@@ -125,7 +125,9 @@ public class LogoDrawerMixin {
 
             while (remainingW > 0) {
                 int drawW = Math.min(16 - u, remainingW);
-                context.drawTexture(texture, currentX, rowY, u, v, drawW, 1, 16, 16);
+                context.drawTexture(net.minecraft.client.render.RenderLayer::getGuiTextured,
+                        texture, currentX, rowY, (float) u, (float) v, drawW, 1, 16, 16);
+
                 currentX += drawW;
                 remainingW -= drawW;
                 u = 0; // The next segment will start cleanly at u=0

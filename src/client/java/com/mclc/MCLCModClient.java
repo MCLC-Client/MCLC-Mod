@@ -101,17 +101,12 @@ public class MCLCModClient implements ClientModInitializer {
             HUDConfig.ModuleData armorMod = config.getModule("Armor Status");
             if (armorMod != null && armorMod.enabled) {
                 int currentY = armorMod.y;
-                Iterable<ItemStack> armorItems = client.player.getArmorItems();
-
-                // MC returns armor iterating from Boots to Helmet. We usually want Helmet to
-                // Boots visually,
-                // so we collect them and reverse, or just draw them bottom-up. Let's draw
-                // top-down.
+                // Use EquipmentSlot for 1.21.5 compatibility (getArmorItems() was removed)
                 ItemStack[] armorArray = new ItemStack[4];
-                int index = 0;
-                for (ItemStack stack : armorItems) {
-                    armorArray[index++] = stack;
-                }
+                armorArray[0] = client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.FEET);
+                armorArray[1] = client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.LEGS);
+                armorArray[2] = client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST);
+                armorArray[3] = client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.HEAD);
 
                 for (int i = 3; i >= 0; i--) {
                     ItemStack stack = armorArray[i];

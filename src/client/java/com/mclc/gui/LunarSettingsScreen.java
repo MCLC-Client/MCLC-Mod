@@ -1,7 +1,7 @@
 package com.mclc.gui;
 
 import com.mclc.config.HUDConfig;
-import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -294,14 +294,11 @@ public class LunarSettingsScreen extends Screen {
         Identifier moduleIcon = getModuleIcon(mod.name);
         boolean hasIcon = this.client != null && this.client.getResourceManager().getResource(moduleIcon).isPresent();
 
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, globalAlpha);
-
         if (hasIcon) {
-            // Give icon a small padding inside the box
             int iconPad = (int) (iconSize * 0.15f);
-            context.drawTexture(moduleIcon, iconX + iconPad, iconY + iconPad, iconSize - iconPad * 2,
-                    iconSize - iconPad * 2, 0.0f, 0.0f, 128, 128, 128, 128);
+            context.drawTexture(net.minecraft.client.render.RenderLayer::getGuiTextured,
+                    moduleIcon, iconX + iconPad, iconY + iconPad,
+                    0.0f, 0.0f, iconSize - iconPad * 2, iconSize - iconPad * 2, 128, 128);
         } else {
             // Centered Question Mark Fallback
             int textW = this.textRenderer.getWidth("?");
@@ -314,10 +311,8 @@ public class LunarSettingsScreen extends Screen {
             context.getMatrices().pop();
         }
 
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-        int nameWidth = this.textRenderer.getWidth(mod.name);
         context.getMatrices().push();
+        int nameWidth = this.textRenderer.getWidth(mod.name);
         int textY = y + (int) (height * 0.50); // Move text slightly up to avoid cutoffs
         if (nameWidth > width - 10) {
             float textScale = (float) (width - 10) / nameWidth;
@@ -354,17 +349,15 @@ public class LunarSettingsScreen extends Screen {
             context.getMatrices().translate(-pivotX, -pivotY, 0);
         }
 
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, globalAlpha);
-
         boolean hasCustomGear = false;
         if (this.client != null && this.client.getResourceManager().getResource(GEAR_TEXTURE).isPresent()) {
             hasCustomGear = true;
         }
 
         if (hasCustomGear) {
-            context.drawTexture(GEAR_TEXTURE, gearIconX, gearIconY, gearIconSize, gearIconSize, 0.0f, 0.0f, 128, 128,
-                    128, 128);
+            context.drawTexture(net.minecraft.client.render.RenderLayer::getGuiTextured,
+                    GEAR_TEXTURE, gearIconX, gearIconY,
+                    0.0f, 0.0f, gearIconSize, gearIconSize, 128, 128);
         } else {
             // Robust Fallback to text "+" if the PNG is missing or not loaded yet
             float fallbackScale = gearIconSize / 10f;
@@ -377,7 +370,6 @@ public class LunarSettingsScreen extends Screen {
             context.getMatrices().pop();
         }
 
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         context.getMatrices().pop();
 
         int btnHeight = Math.max(18, (int) (height * 0.18));
