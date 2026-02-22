@@ -296,7 +296,7 @@ public class LunarSettingsScreen extends Screen {
 
         if (hasIcon) {
             int iconPad = (int) (iconSize * 0.15f);
-            context.drawTexture(net.minecraft.client.render.RenderLayer::getGuiTextured,
+            com.mclc.utils.RenderUtils.drawTexture(context,
                     moduleIcon, iconX + iconPad, iconY + iconPad,
                     0.0f, 0.0f, iconSize - iconPad * 2, iconSize - iconPad * 2, 128, 128);
         } else {
@@ -355,7 +355,7 @@ public class LunarSettingsScreen extends Screen {
         }
 
         if (hasCustomGear) {
-            context.drawTexture(net.minecraft.client.render.RenderLayer::getGuiTextured,
+            com.mclc.utils.RenderUtils.drawTexture(context,
                     GEAR_TEXTURE, gearIconX, gearIconY,
                     0.0f, 0.0f, gearIconSize, gearIconSize, 128, 128);
         } else {
