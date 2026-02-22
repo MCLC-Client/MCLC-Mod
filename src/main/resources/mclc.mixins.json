@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "package": "com.mclc.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "refmap": "mclc.refmap.json",
+    "mixins": [],
+    "client": [
+        "LogoDrawerMixin",
+        "SplashTextRendererMixin",
+        "TitleScreenMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 0
+    }
+}
