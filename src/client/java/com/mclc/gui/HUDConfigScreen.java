@@ -103,16 +103,19 @@ public class HUDConfigScreen extends Screen {
                 if (mod.name.equals("Armor Status")) {
                     context.fill(modX, modY, modX + modWidth, modY + modHeight, 0xAA000000);
                     // Draw Player Armor or Dummy Armor
+                    Iterable<ItemStack> armorItems = null;
+                    if (this.client != null && this.client.player != null) {
+                        armorItems = this.client.player.getArmorItems();
+                    }
+
                     ItemStack[] armorArray = new ItemStack[4];
                     boolean hasAnyArmor = false;
 
-                    if (this.client != null && this.client.player != null) {
-                        armorArray[0] = this.client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.FEET);
-                        armorArray[1] = this.client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.LEGS);
-                        armorArray[2] = this.client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST);
-                        armorArray[3] = this.client.player.getEquippedStack(net.minecraft.entity.EquipmentSlot.HEAD);
-                        for (int i = 0; i < 4; i++) {
-                            if (armorArray[i] != null && !armorArray[i].isEmpty())
+                    if (armorItems != null) {
+                        int index = 3; // Armor items are returned from boots to helmet, render helmet at top
+                        for (ItemStack stack : armorItems) {
+                            armorArray[index--] = stack;
+                            if (stack != null && !stack.isEmpty())
                                 hasAnyArmor = true;
                         }
                     }

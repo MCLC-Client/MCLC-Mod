@@ -125,7 +125,7 @@ public class LogoDrawerMixin {
 
             while (remainingW > 0) {
                 int drawW = Math.min(16 - u, remainingW);
-                com.mclc.utils.RenderUtils.drawTexture(context,
+                context.drawTexture(net.minecraft.client.render.RenderLayer::getGuiTextured,
                         texture, currentX, rowY, (float) u, (float) v, drawW, 1, 16, 16);
 
                 currentX += drawW;
