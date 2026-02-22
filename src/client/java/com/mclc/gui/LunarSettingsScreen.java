@@ -333,42 +333,39 @@ public class LunarSettingsScreen extends Screen {
         int gearColor = hoveringGear ? OPTIONS_GEAR_HOVER : OPTIONS_GEAR_BG;
         drawSmoothRoundedRect(context, gearX, gearY, gearSize, gearSize, 4, applyAlpha(gearColor, globalAlpha));
 
-        // Draw gear texture icon instead of text glyph - pixel-perfect, no font issues
+        // Draw gear texture icon - pixel-perfect, cross-version compatible
         context.getMatrices().push();
-        float gearIconPad = gearSize * 0.15f;
-        int gearIconX = (int) (gearX + gearIconPad);
-        int gearIconY = (int) (gearY + gearIconPad);
-        int gearIconSize = (int) (gearSize - gearIconPad * 2);
+
+        Identifier settingsIcon = Identifier.of("mclc", "textures/gui/settings.png");
+        boolean settingsHasIcon = this.client != null
+                && this.client.getResourceManager().getResource(settingsIcon).isPresent();
+        if (!settingsHasIcon) {
+            settingsIcon = Identifier.of("minecraft", "textures/gui/sprites/icon/settings.png");
+        }
+
+        int drawSize = 8;
+        int settingsIconX = gearX + (gearSize - drawSize) / 2;
+        int settingsIconY = gearY + (gearSize - drawSize) / 2;
+
+        // Force Render Settings - Z-Index 150 to ensure it's on top
+        context.getMatrices().translate(0, 0, 150f);
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+
         // Apply hover rotation via matrix transform
         if (mod.hoverAnim > 0) {
-            float pivotX = gearX + gearSize * 0.5f;
-            float pivotY = gearY + gearSize * 0.5f;
+            float pivotX = settingsIconX + drawSize * 0.5f;
+            float pivotY = settingsIconY + drawSize * 0.5f;
             float rotAngle = mod.hoverAnim * 15f; // up to 15 degrees rotation on full hover
             context.getMatrices().translate(pivotX, pivotY, 0);
             context.getMatrices().multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Z.rotationDegrees(rotAngle));
             context.getMatrices().translate(-pivotX, -pivotY, 0);
         }
 
-        boolean hasCustomGear = false;
-        if (this.client != null && this.client.getResourceManager().getResource(GEAR_TEXTURE).isPresent()) {
-            hasCustomGear = true;
-        }
-
-        if (hasCustomGear) {
-            com.mclc.utils.RenderUtils.drawTexture(context,
-                    GEAR_TEXTURE, gearIconX, gearIconY,
-                    0.0f, 0.0f, gearIconSize, gearIconSize, 128, 128);
-        } else {
-            // Robust Fallback to text "+" if the PNG is missing or not loaded yet
-            float fallbackScale = gearIconSize / 10f;
-            context.getMatrices().push();
-            context.getMatrices().translate(
-                    gearX + gearSize / 2f - (this.textRenderer.getWidth("+") * fallbackScale) / 2f,
-                    gearY + gearSize / 2f - (8 * fallbackScale) / 2f, 0);
-            context.getMatrices().scale(fallbackScale, fallbackScale, 1.0f);
-            context.drawTextWithShadow(this.textRenderer, "+", 0, 0, applyAlpha(0xFFFFFFFF, globalAlpha));
-            context.getMatrices().pop();
-        }
+        com.mclc.utils.RenderUtils.drawTexture(context,
+                settingsIcon, settingsIconX, settingsIconY,
+                0.0f, 0.0f, drawSize, drawSize, drawSize, drawSize);
+        com.mojang.blaze3d.systems.RenderSystem.disableBlend();
 
         context.getMatrices().pop();
 
