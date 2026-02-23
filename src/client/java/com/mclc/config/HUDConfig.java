@@ -33,12 +33,13 @@ public class HUDConfig {
 
     private HUDConfig() {
         modules.put("FPS Counter", new ModuleData("FPS Counter", true, 10, 10));
+        modules.put("Fullbright", new ModuleData("Fullbright", false, 10, 50));
         // Add some dummy modules to demonstrate dragging & scrolling
-        modules.put("Keystrokes", new ModuleData("Keystrokes", true, 10, 50));
-        modules.put("Armor Status", new ModuleData("Armor Status", false, 10, 90));
-        modules.put("Potion Effects", new ModuleData("Potion Effects", true, 10, 130));
-        modules.put("CPS", new ModuleData("CPS", false, 10, 170));
-        modules.put("Ping", new ModuleData("Ping", false, 10, 210));
+        modules.put("Keystrokes", new ModuleData("Keystrokes", true, 10, 90));
+        modules.put("Armor Status", new ModuleData("Armor Status", false, 10, 130));
+        modules.put("Potion Effects", new ModuleData("Potion Effects", true, 10, 170));
+        modules.put("CPS", new ModuleData("CPS", false, 10, 210));
+        modules.put("Ping", new ModuleData("Ping", false, 10, 250));
     }
 
     public void load() {
@@ -46,7 +47,17 @@ public class HUDConfig {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 HUDConfig loaded = GSON.fromJson(reader, HUDConfig.class);
                 if (loaded != null && loaded.modules != null) {
-                    this.modules = loaded.modules;
+                    for (Map.Entry<String, ModuleData> entry : loaded.modules.entrySet()) {
+                        if (this.modules.containsKey(entry.getKey())) {
+                            ModuleData defaultData = this.modules.get(entry.getKey());
+                            ModuleData loadedData = entry.getValue();
+
+                            // Restore transient variables and update values
+                            loadedData.defaultX = defaultData.defaultX;
+                            loadedData.defaultY = defaultData.defaultY;
+                            this.modules.put(entry.getKey(), loadedData);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 System.err.println("Failed to load HUD config: " + e.getMessage());

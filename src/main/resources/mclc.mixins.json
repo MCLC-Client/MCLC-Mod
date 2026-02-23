@@ -5,6 +5,7 @@
     "refmap": "mclc.refmap.json",
     "mixins": [],
     "client": [
+        "SimpleOptionMixin",
         "SplashTextRendererMixin",
         "TitleScreenMixin"
     ],
