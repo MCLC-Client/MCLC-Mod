@@ -9,6 +9,7 @@ import net.minecraft.text.TranslatableTextContent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -74,25 +75,17 @@ public abstract class TitleScreenMixin extends net.minecraft.client.gui.screen.S
     }
 
     // ────────────────────────────────────────────────────────────────────────────
-    // 2. render() — suppress the copyright string draw entirely.
-    // TitleScreen.render() calls drawStringWithShadow/drawTextWithShadow at
-    // some Y for COPYRIGHT. We inject at HEAD, track a flag, then blank any
-    // draw that would have printed it by overwriting with nothing.
-    //
-    // The safest approach: inject at TAIL and draw a filled rect over the
-    // exact area where vanilla would have printed the copyright.
+    // 2. Hide the copyright text radically using a Redirect
     // ────────────────────────────────────────────────────────────────────────────
-    @Inject(method = "render", at = @At("TAIL"))
-    private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        // Calculate the bounding box where vanilla draws the copyright
-        int textW = textRenderer.getWidth(COPYRIGHT);
-        int x = width - textW - 2;
-        int y = height - 10;
-
-        // Erase: fill a rect over the text area with the background colour (transparent
-        // = 0x00000000)
-        // Using the fill with the same background tone Minecraft uses (black gradient
-        // fade at screen base)
-        context.fill(x - 1, y - 1, x + textW + 1, y + textRenderer.fontHeight + 1, 0xFF000000);
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithShadow(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
+    private int hideCopyrightText(DrawContext instance, net.minecraft.client.font.TextRenderer textRenderer,
+            net.minecraft.text.Text text, int x, int y, int color) {
+        if (text != null && text.getString().contains("Copyright Mojang AB")) {
+            // Do not draw it, return immediately. drawTextWithShadow returns an int
+            // (typically x + width).
+            return x;
+        }
+        // Otherwise, allow normal rendering
+        return instance.drawTextWithShadow(textRenderer, text, x, y, color);
     }
 }

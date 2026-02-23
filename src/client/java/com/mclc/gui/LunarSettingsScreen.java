@@ -314,8 +314,6 @@ public class LunarSettingsScreen extends Screen {
             context.getMatrices().pop();
         }
 
-        context.getMatrices().pop();
-
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         context.getMatrices().push();
