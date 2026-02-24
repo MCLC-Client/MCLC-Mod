@@ -176,7 +176,12 @@ public abstract class TitleScreenMixin extends net.minecraft.client.gui.screen.S
             com.mclc.TestIcon.printIcons();
             mclcIconsPrinted = true;
         }
+
+        // Use proper rendering blending to avoid black rectangles
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
         drawCustomLogo(context, this.width, 30);
+        com.mojang.blaze3d.systems.RenderSystem.disableBlend();
     }
 
     // ────────────────────────────────────────────────────────────────────────────
